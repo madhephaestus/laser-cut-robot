@@ -38,14 +38,38 @@ class Feet implements ICadGenerator, IParameterChanged{
 		ArrayList<CSG> allCad=defaultCadGen.generateCad(d,linkIndex);
 		ArrayList<DHLink> dhLinks=d.getChain().getLinks();
 		DHLink dh = dhLinks.get(linkIndex)
+
+		//The link configuration
+		LinkConfiguration conf = d.getLinkConfiguration(linkIndex);
+		// creating the servo
+		CSG servoReference=   Vitamins.get(conf.getElectroMechanicalType(),conf.getElectroMechanicalSize())
+		.transformed(new Transform().rotZ(90))
+		//Creating the horn
+		double servoTop = servoReference.getMaxZ()
+		CSG horn = Vitamins.get(conf.getShaftType(),conf.getShaftSize())	
+		
+		
 		//If you want you can add things here
 		//allCad.add(myCSG);
 		if(linkIndex ==dhLinks.size()-1){
 			println "Found foot limb" 
-			CSG foot =new Cylinder(10,10,thickness.getMM(),(int)30).toCSG() // a one line Cylinder
+			CSG foot =new Cylinder(20,20,thickness.getMM(),(int)30).toCSG() // a one line Cylinder
+
+			CSG otherBit =new Cube(	40,// X dimention
+								dh.getR(),// Y dimention
+								thickness.getMM()//  Z dimention
+								).toCSG()// this converts from the geometry to an object we can work with
+								.toYMin()
+								.toZMin()
 			
+			//moving the pary to the attachment pont
+			otherBit = defaultCadGen.moveDHValues(otherBit,dh)
+			
+			defaultCadGen.add(allCad,otherBit,dh.getListener())
 			defaultCadGen.add(allCad,foot,dh.getListener())
 		}
+		
+		
 		return allCad;
 	}
 	@Override 
