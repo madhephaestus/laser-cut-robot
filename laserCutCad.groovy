@@ -100,6 +100,17 @@ return new ICadGenerator(){
 		add(bodyParts,bodyPlate,base.getRootListener())
 		
 		bodyMap.put(legStr,bodyParts)
+
+		for(CSG vitamin: bodyParts){
+			vitamin.setManufactuing({CSG arg0 ->
+	
+				return new Cube(	0.001,// X dimention
+								0.001,// Y dimention
+								0.001//  Z dimention
+								).toCSG()// this converts from the geometry to an object we can work with
+								.toZMin()
+			});
+		}
 		return bodyParts;
 	}
 	@Override 

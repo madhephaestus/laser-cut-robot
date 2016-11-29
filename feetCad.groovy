@@ -51,7 +51,7 @@ class Feet implements ICadGenerator, IParameterChanged{
 		
 		//If you want you can add things here
 		//allCad.add(myCSG);
-		if(linkIndex ==dhLinks.size()-1){
+		//if(linkIndex ==dhLinks.size()-1){
 			println "Found foot limb" 
 			CSG foot =new Cylinder(20,20,thickness.getMM(),(int)30).toCSG() // a one line Cylinder
 
@@ -65,18 +65,39 @@ class Feet implements ICadGenerator, IParameterChanged{
 			//moving the pary to the attachment pont
 			otherBit = defaultCadGen.moveDHValues(otherBit,dh)
 			
+
+			for(CSG vitamin: allCad){
+				vitamin.setManufactuing({CSG arg0 ->
+		
+					return new Cube(	0.001,// X dimention
+									0.001,// Y dimention
+									0.001//  Z dimention
+									).toCSG()// this converts from the geometry to an object we can work with
+									.toZMin()
+				});
+			}
 			defaultCadGen.add(allCad,otherBit,dh.getListener())
 			defaultCadGen.add(allCad,foot,dh.getListener())
-		}
-		
-		
-		return allCad;
+		//}
+
+			
+			otherBit.setManufactuing({CSG arg0 ->
+	
+				return defaultCadGen
+						.reverseDHValues(
+							arg0,
+							dh
+						).toZMin()
+			});
+			
+			return allCad;
 	}
 	@Override 
 	public ArrayList<CSG> generateBody(MobileBase b ) {
 		ArrayList<CSG> allCad=defaultCadGen.generateBody(b);
 		//If you want you can add things here
 		//allCad.add(myCSG);
+		
 		return allCad;
 	}
 	/**
